@@ -230,6 +230,8 @@ export const en = {
   'settings.proHaveSub': 'Insights and comparisons are unlocked',
   'settings.proUpgrade': 'Upgrade to Pro',
   'settings.proUpgradeSub': 'Unlock insights and strategy comparisons',
+  'settings.manageSub': 'Manage subscription',
+  'settings.manageSubSub': 'Update, restore, or cancel your plan',
   'settings.footerBuilt': 'Built on device. Nothing leaves your phone.',
   'settings.rtlNote': 'Language direction updates fully after you reopen the app.',
 

@@ -118,17 +118,23 @@ config requires a new store build.
 These ship in the codebase as clean seams that degrade gracefully. Wire them when you want
 the native capability.
 
-### Live Pro billing (RevenueCat)
+### Live Pro billing (RevenueCat) is wired
 
-```bash
-npx expo install react-native-purchases
-```
+RevenueCat (`react-native-purchases` + `react-native-purchases-ui`, installed via
+`expo install`) is integrated end to end: `src/features/paywall/revenuecat.ts` configures the
+SDK at startup and mirrors the `Solvent Pro` entitlement into the store; `src/app/paywall.tsx`
+renders the RevenueCat Paywall; Settings opens the Customer Center when the user is Pro. No
+app.json config plugin is required (both packages autolink). To go live:
 
-Add your public SDK keys to `.env` (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`,
-`EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`). In `src/features/paywall/entitlement.ts`, replace the
-bodies of `purchasePro` / `restore` with `Purchases.purchasePackage` / `restorePurchases`
-and call `setPro` with the resulting entitlement. The store and every gated screen stay
-unchanged.
+1. Dashboard: create the entitlement `Solvent Pro`; add products `lifetime`, `yearly`,
+   `monthly`; attach them to an Offering and mark it current; design a Paywall on that
+   Offering; enable the Customer Center. Create the matching products in App Store Connect
+   and Google Play Console.
+2. Keys: the bundled `test_...` key works in a development dev client. For production set
+   `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (`appl_...`) and `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`
+   (`goog_...`) in `.env`. These are public client keys, safe to ship.
+3. Build a dev client (`react-native-purchases` is native), then test purchase + restore +
+   the Customer Center with a sandbox account on a real device.
 
 ### On-device LLM coach
 

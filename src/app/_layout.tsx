@@ -14,6 +14,7 @@ import { fontAssets, ThemeProvider } from '@/theme';
 import { useI18nStore } from '@/i18n';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useDebtsStore } from '@/stores/useDebtsStore';
+import { configureRevenueCat } from '@/features/paywall/revenuecat';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -25,6 +26,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     void loadDebts();
+    void configureRevenueCat();
   }, [loadDebts]);
 
   const ready = (fontsLoaded || Boolean(fontError)) && hydrated && langHydrated;

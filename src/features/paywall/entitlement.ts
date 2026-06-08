@@ -1,40 +1,28 @@
-// Entitlement seam.
+// Entitlement seam, backed by RevenueCat.
 //
-// Pro gating reads from one place (useEntitlementStore) so the UI never depends on a
-// billing vendor. This LocalEntitlement implementation flips the local flag, which is
-// correct for development and sideloaded builds.
-//
-// To ship paid: install react-native-purchases (RevenueCat) in a dev client, configure
-// the iOS/Android API keys, and replace the bodies of purchasePro/restore with
-// Purchases.purchasePackage / Purchases.restorePurchases, then call setPro with the
-// resulting entitlement. The store and every gated screen stay unchanged. Exact steps
-// live in zero-to-deploy.md.
+// Pro state is mirrored into useEntitlementStore by the customer-info listener configured
+// in features/paywall/revenuecat.ts, so every gated screen (Insights, Settings, the home
+// gate) keeps reading the store and nothing downstream changed when billing went live.
 
 import { useCallback } from 'react';
 import { useEntitlementStore } from '@/stores/useEntitlementStore';
+import { restorePurchases } from './revenuecat';
+import { presentCustomerCenter, presentPaywall } from './paywallUi';
 
 export interface EntitlementApi {
   isPro: boolean;
+  /** Present the paywall. Returns whether the user is now Pro. */
   purchasePro: () => Promise<boolean>;
+  /** Restore prior purchases. Returns whether Pro is now active. */
   restore: () => Promise<boolean>;
+  /** Open the RevenueCat Customer Center (manage, restore, cancel, refund). */
+  openCustomerCenter: () => Promise<void>;
 }
 
 export function useEntitlement(): EntitlementApi {
   const isPro = useEntitlementStore((s) => s.isPro);
-  const setPro = useEntitlementStore((s) => s.setPro);
-
-  const purchasePro = useCallback(async () => {
-    // Production: const { customerInfo } = await Purchases.purchasePackage(pkg);
-    //             setPro(Boolean(customerInfo.entitlements.active.pro));
-    setPro(true);
-    return true;
-  }, [setPro]);
-
-  const restore = useCallback(async () => {
-    // Production: const info = await Purchases.restorePurchases();
-    //             setPro(Boolean(info.entitlements.active.pro));
-    return isPro;
-  }, [isPro]);
-
-  return { isPro, purchasePro, restore };
+  const purchasePro = useCallback(() => presentPaywall(), []);
+  const restore = useCallback(() => restorePurchases(), []);
+  const openCustomerCenter = useCallback(() => presentCustomerCenter(), []);
+  return { isPro, purchasePro, restore, openCustomerCenter };
 }

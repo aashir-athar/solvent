@@ -46,7 +46,7 @@ export default function SettingsScreen() {
   const setPaymentDay = useSettingsStore((s) => s.setPaymentDay);
   const nudgeEnabled = useSettingsStore((s) => s.nudgeEnabled);
   const setNudgeEnabled = useSettingsStore((s) => s.setNudgeEnabled);
-  const { isPro } = useEntitlement();
+  const { isPro, openCustomerCenter } = useEntitlement();
 
   const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
     { value: 'system', label: t('settings.themeSystem') },
@@ -181,10 +181,10 @@ export default function SettingsScreen() {
           <View>
             <Divider />
             <PressableRow
-              title={isPro ? t('settings.proHave') : t('settings.proUpgrade')}
-              subtitle={isPro ? t('settings.proHaveSub') : t('settings.proUpgradeSub')}
-              showChevron={!isPro}
-              onPress={() => router.push('/paywall')}
+              title={isPro ? t('settings.manageSub') : t('settings.proUpgrade')}
+              subtitle={isPro ? t('settings.manageSubSub') : t('settings.proUpgradeSub')}
+              showChevron
+              onPress={() => (isPro ? void openCustomerCenter() : router.push('/paywall'))}
             />
             <Divider />
           </View>
