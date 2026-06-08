@@ -1,0 +1,16 @@
+name: Publish OTA update
+
+# Ships JS and asset changes to everyone on the production channel as soon as main moves.
+# Native or app.json native-config changes still require a new store build.
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  publish_update:
+    name: Publish update to the production channel
+    type: update
+    params:
+      channel: production
+      message: Continuous update from main

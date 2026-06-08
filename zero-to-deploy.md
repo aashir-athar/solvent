@@ -172,7 +172,24 @@ Missing keys fall back to English automatically, so nothing ever renders blank.
 
 ---
 
-## 9. Pre-submission checklist
+## 9. CI/CD: GitHub Actions + EAS Workflows
+
+Two pipelines ship with the repo.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: `npm ci`,
+strict `tsc --noEmit`, the full `jest` suite, and `expo-doctor`. No setup needed; it guards
+code quality automatically.
+
+EAS Workflows (`.eas/workflows/`) run on Expo's cloud and need the project connected first:
+run `eas init` (writes the EAS project id to app.json), then on expo.dev link the GitHub
+repo under the project's GitHub settings.
+
+- `publish-update.yml` publishes an OTA update to the `production` channel on every push to
+  `main`.
+- `build-and-submit.yml` is manual (`eas workflow:run build-and-submit.yml`): it builds
+  signed production binaries for both platforms and submits each to its store.
+
+## 10. Pre-submission checklist
 
 - [ ] `npx tsc --noEmit` clean, `npx jest` green, `npx expo-doctor` clean
 - [ ] App icon + splash replaced with the generated spruce assets
